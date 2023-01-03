@@ -2,7 +2,7 @@ SHELL := /bin/bash
 ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 CHART_VER ?= 0.3.6
-DRBD_VER ?= 9.0.32-1# another tested value is: 9.1.11
+DRBD_VER ?= 9.0.32-1# another tested value is: 9.1.12
 DRBD_UTILS_VER ?= 9.12.1# another tested value is: 9.21.4
 
 # Pick a commit according to date from: https://github.com/LINBIT/drbd-headers/commits/master
@@ -113,14 +113,15 @@ push:
 	set -x; \
 	for i in $(IMG); do \
 		[ $$i = "shipper" ] && ver=$(DRBD_VER)_v$(CHART_VER) || ver=$(DRBD_VER); \
-		docker manifest rm $(REG)/drbd9-$$i:v$${ver}; \
-			for a in $(shell echo $(ARCH) | tr ',' ' ' ); do \
-				docker push $(REG)/drbd9-$$i:v$${ver}_$${a/\//-} || \
-				docker push $(REG)/drbd9-$$i:v$${ver}_$${a/\//-}; \
-				docker manifest create --amend $(REG)/drbd9-$$i:v$${ver} $(REG)/drbd9-$$i:v$${ver}_$${a/\//-}; \
+		img=drbd9-$$i:v$${ver}; \
+		docker manifest rm $(REG)/$${img}; \
+			for a in $(shell echo $(ARCH) | tr ',' ' ' | tr '/' '-' ); do \
+				docker push $(REG)/$${img}_$$a || \
+				docker push $(REG)/$${img}_$$a; \
+				docker manifest create --amend $(REG)/$${img} $(REG)/$${img}_$$a; \
 			done; \
-		docker manifest push --purge $(REG)/drbd9-$$i:v$${ver}; \
-		docker manifest inspect $(REG)/drbd9-$$i:v$${ver}; \
+		docker manifest push --purge $(REG)/$${img}; \
+		docker manifest inspect $(REG)/$${img}; \
 	done
 
-all: drbd9 shipper push
+all: shipper drbd9 push

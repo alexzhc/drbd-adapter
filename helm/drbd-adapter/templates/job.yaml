@@ -16,7 +16,7 @@
   {{ $distro = "focal" }}
 {{ else if regexMatch "ubuntu .*22" $osImage }}
   {{ $distro = "jammy" }}
-  {{ $tag = "v9.1.11" }}
+  {{ $tag = "v9.1.12" }}
 {{ else if regexMatch "kylin .*v10" $osImage }}
   {{ $distro = "kylin10" }}
 {{ end }}

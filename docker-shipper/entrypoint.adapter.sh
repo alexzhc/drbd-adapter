@@ -42,7 +42,7 @@ then
 else 
    echo "The loaded DRBD module version $RUNNING_DRBD_VERSION is lower than $DRBD_VERSION"
    if [[ $LB_UPGRADE == 'yes' ]] || [[ $RUNNING_DRBD_VERSION =~ ^8 ]]; then
-      for i in drbd_transport_tcp drbd; do
+      for i in drbd_transport_tcp drbd_transport_rdma drbd; do
          if lsmod | grep -w $i; then
             rmmod $i || true
          fi
